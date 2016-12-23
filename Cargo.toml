@@ -4,7 +4,7 @@ version = "0.1.0"
 authors = ["Lucille Blumire <llblumire@gmail.com>"]
 description = "Macros for manipulating arrays from slices"
 license = "Unlicense/MIT"
-keywords = ["array", "arr", "util", "arrutil", "utility", "macro"]
+keywords = ["array", "arr", "util", "utility", "macro"]
 repository = "https://github.com/LLBlumire/arrutil"
 
 [dependencies]
