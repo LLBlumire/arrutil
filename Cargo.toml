@@ -1,6 +1,6 @@
 [package]
 name = "arrutil"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Lucille Blumire <llblumire@gmail.com>"]
 description = "Macros for manipulating arrays from slices"
 license = "Unlicense/MIT"

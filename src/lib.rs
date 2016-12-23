@@ -29,6 +29,7 @@
 /// Where N is an integer literal and a valid array length.
 ///
 /// Returns `None` when length is longer than slice.
+#[macro_export]
 macro_rules! slice_to_array {
     ($source:expr, $len:expr) => {{
         #[inline]
@@ -63,6 +64,7 @@ macro_rules! slice_to_array {
 /// Where N is an integer literal and a valid array length.
 ///
 /// Returns `None` when length is longer than slice.
+#[macro_export]
 macro_rules! slice_to_array_mut {
     ($source:expr, $len:expr) => {{
         #[inline]
@@ -98,6 +100,7 @@ macro_rules! slice_to_array_mut {
 /// ```
 ///
 /// Where N is an integer literal and a valid array length.
+#[macro_export]
 macro_rules! slice_to_array_unchecked {
     ($source:expr, $len:expr) => {{
         #[inline]
@@ -127,6 +130,7 @@ macro_rules! slice_to_array_unchecked {
 /// ```
 ///
 /// Where N is an integer literal and a valid array length.
+#[macro_export]
 macro_rules! slice_to_array_mut_unchecked {
     ($source:expr, $len:expr) => {{
         #[inline]
@@ -156,6 +160,7 @@ macro_rules! slice_to_array_mut_unchecked {
 /// Where N is an integer literal and a valid array length.
 ///
 /// Returns `None` when length is longer than slice.
+#[macro_export]
 macro_rules! split_to_array {
     ($source:expr, $len:expr) => {{
         fn split_to_array<T>(source: &[T]) -> Option<(&[T; $len], &[T])> {
@@ -189,6 +194,7 @@ macro_rules! split_to_array {
 /// Where N is an integer literal and a valid array length.
 ///
 /// Returns `None` when length is longer than slice.
+#[macro_export]
 macro_rules! split_to_array_mut {
     ($source:expr, $len:expr) => {{
         fn split_to_array_mut<T>(source: &mut [T]) -> Option<(&mut [T; $len], &mut [T])> {
