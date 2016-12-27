@@ -16,13 +16,13 @@
 ///
 /// Internally, it has the signature:
 ///
-/// ```
+/// ```rust,ignore
 /// fn slice_to_array<T>(source: &[T]) -> Option<&[T; N]>
 /// ```
 ///
 /// Externally, it should be seen as having the signature
 ///
-/// ```
+/// ```rust,ignore
 /// slice_to_array!(source: &[T], len: N) -> Option<&[T; N>
 /// ```
 ///
@@ -51,13 +51,13 @@ macro_rules! slice_to_array {
 ///
 /// Internally, it has the signature:
 ///
-/// ```
+/// ```rust,ignore
 /// fn slice_to_array_mut<T>(source: &mut [T]) -> Option<&mut [T; N]>
 /// ```
 ///
 /// Externally, it should be seen as having the signature
 ///
-/// ```
+/// ```rust,ignore
 /// slice_to_array_mut!(source: &mut [T], len: N) -> Option<&mut [T; N>
 /// ```
 ///
@@ -89,13 +89,13 @@ macro_rules! slice_to_array_mut {
 ///
 /// Internally, it has the signature
 ///
-/// ```
+/// ```rust,ignore
 /// unsafe fn slice_to_array_unchecked<T>(source: &[T]) -> &[T; N]
 /// ```
 ///
 /// Externally, it should be seen as having the signature
 /// 
-/// ```
+/// ```rust,ignore
 /// unsafe slice_to_array_unchecked!(source: &[T], len: N) -> &[T; N]
 /// ```
 ///
@@ -119,13 +119,13 @@ macro_rules! slice_to_array_unchecked {
 ///
 /// Internally, it has the signature
 ///
-/// ```
+/// ```rust,ignore
 /// unsafe fn slice_to_array_mut_unchecked<T>(source: &mut [T]) -> &mut [T; N]
 /// ```
 ///
 /// Externally, it should be seen as having the signature
 /// 
-/// ```
+/// ```rust,ignore
 /// unsafe slice_to_array_mut_unchecked!(source: &mut [T], len: N) -> &mut [T; N]
 /// ```
 ///
@@ -147,13 +147,13 @@ macro_rules! slice_to_array_mut_unchecked {
 ///
 /// Internally, it has the signature
 ///
-/// ```
+/// ```rust,ignore
 /// fn split_to_array<T>(source: &[T]) -> Option<(&[T; N], &[T])>
 /// ```
 ///
 /// Externally, it should be seen as having the signature
 /// 
-/// ```
+/// ```rust,ignore
 /// slice_to_array!(source: &[T], len: N) -> Option<(&[T; N], &[T])>
 /// ```
 ///
@@ -181,13 +181,13 @@ macro_rules! split_to_array {
 ///
 /// Internally, it has the signature
 ///
-/// ```
+/// ```rust,ignore
 /// fn split_to_array_mut<T>(source: &mut [T]) -> Option<(&mut [T; N], &mut [T])>
 /// ```
 ///
 /// Externally, it should be seen as having the signature
 /// 
-/// ```
+/// ```rust,ignore
 /// slice_to_array_mut!(source: &mut [T], len: N) -> Option<(&mut [T; N], &mut [T])>
 /// ```
 ///
@@ -210,6 +210,40 @@ macro_rules! split_to_array_mut {
     }}
 }
 
+/// You can use `split_to_array_scan` to turn a slice into a reference to an array while mutating the
+/// original slice.
+///
+/// Internally, it has the signature
+///
+/// ```rust,ignore
+/// fn split_to_array_scan<'a, T>(source: &mut &'a [T]) -> Option<&'a [T; N]>
+/// ```
+///
+/// Externally, it should be seen as having the signature
+/// 
+/// ```rust,ignore
+/// slice_to_array_scan!(source: &mut &[T], len: N) -> Option<&[T; N]>
+/// ```
+///
+/// Where N is an integer literal and a valid array length.
+///
+/// Returns `None` when length is longer than slice.
+///
+/// There is no mutable version of this function availble. If someone wants to figure out the
+/// correct way to set one up that the compiler is happy please send a pull request.
+#[macro_export]
+macro_rules! split_to_array_scan {
+    ($source:expr, $len:expr) => {{
+        fn split_to_array_scan<'a, T>(source: &mut &'a [T]) -> Option<&'a [T; $len]> {
+            split_to_array!(*source, $len).map(|(target, source_new)| {
+                *source = source_new;
+                target
+            })
+        }
+
+        split_to_array_scan($source)
+    }}
+}
 
 #[test]
 fn slice_to_array_test() {
@@ -255,4 +289,20 @@ fn split_to_array_mut_test() {
         }
     }
     assert_eq!(source, [1, 100, 3, 4, 200]);
+}
+
+#[test]
+fn split_to_array_scan_test() {
+    let source = [1, 2, 3, 4, 5];
+    {
+        let ref mut source_ref = &source[..];
+        let double: &[u8; 2] = split_to_array_scan!(source_ref, 2).unwrap();
+        let single: &[u8; 1] = split_to_array_scan!(source_ref, 1).unwrap();
+        let dual: &[u8; 2] = split_to_array_scan!(source_ref, 2).unwrap();
+
+
+        assert_eq!(double, &[1, 2]);
+        assert_eq!(single, &[3]);
+        assert_eq!(dual, &[4, 5]);
+    }
 }
