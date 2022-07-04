@@ -30,7 +30,7 @@ pub unsafe fn slice_to_array_unchecked<T, const N: usize>(source: &[T]) -> &[T; 
 
 /// Turn a mutable slice into a mutable reference to an array without bounds checking.
 pub unsafe fn slice_to_array_mut_unchecked<T, const N: usize>(source: &mut [T]) -> &mut [T; N] {
-    &mut *(source.as_ptr() as *mut [T; N])
+    &mut *(source.as_mut_ptr().cast::<[T; N]>())
 }
 
 /// Turns a slice into a reference to an array and a slice starting from the end of the array
